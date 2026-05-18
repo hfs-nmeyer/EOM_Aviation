@@ -102,6 +102,30 @@ EXEC msdb.dbo.sp_add_jobstep
     @command         = N'EXEC [Pricing_AIM].[dbo].[run_test_Diamond_Apollo];',
     @database_name   = N'Pricing_AIM',
     @subsystem       = N'TSQL',
+    @on_success_action = 3,
+    @on_fail_action    = 2;
+
+-- Step 7: AIM Status Policy (Apollo + Diamond policy-status dimension)
+--   Depends on: pricing_aim.dbo.rr_aim_apollo (pre-loaded), [AHI-S06].Diamond
+EXEC msdb.dbo.sp_add_jobstep
+    @job_id          = @jobId,
+    @step_name       = N'7 - AIM Status Policy',
+    @step_id         = 7,
+    @command         = N'EXEC [Pricing_AIM].[dbo].[run_test_AIM_Status_Pol];',
+    @database_name   = N'Pricing_AIM',
+    @subsystem       = N'TSQL',
+    @on_success_action = 3,
+    @on_fail_action    = 2;
+
+-- Step 8: Rate Monitor Table (policy-level adequacy + monthly summary)
+--   Depends on: test_aim_STT (step 6), test_aim_status_pol (step 7)
+EXEC msdb.dbo.sp_add_jobstep
+    @job_id          = @jobId,
+    @step_name       = N'8 - Rate Monitor Table',
+    @step_id         = 8,
+    @command         = N'EXEC [Pricing_AIM].[dbo].[run_test_Rate_Monitor_Table];',
+    @database_name   = N'Pricing_AIM',
+    @subsystem       = N'TSQL',
     @on_success_action = 1,  -- Quit with success
     @on_fail_action    = 2;  -- Quit with failure
 

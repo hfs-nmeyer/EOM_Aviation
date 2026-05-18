@@ -267,3 +267,104 @@ SELECT
     COUNT(*)
 FROM dbo.test_aim_STT
 WHERE STT IS NOT NULL AND STT <> 0;
+
+
+-- ============================================================================
+-- 10. ROW COUNTS — post-run tables (aim_status_pol, rate_monitor)
+-- ============================================================================
+PRINT '10. Post-run table row counts';
+
+SELECT src, row_count FROM (
+    SELECT 'prod: aim_status_pol'                   AS src, COUNT(*) AS row_count
+    FROM dbo.aim_status_pol
+    UNION ALL
+    SELECT 'test: test_aim_status_pol',              COUNT(*)
+    FROM dbo.test_aim_status_pol
+    UNION ALL
+    SELECT 'prod: aim_status_pol_policy_mapping',    COUNT(*)
+    FROM dbo.aim_status_pol_policy_mapping
+    UNION ALL
+    SELECT 'test: test_aim_status_pol_policy_mapping', COUNT(*)
+    FROM dbo.test_aim_status_pol_policy_mapping
+    UNION ALL
+    SELECT 'prod: rate_monitor_data',                COUNT(*)
+    FROM dbo.rate_monitor_data
+    UNION ALL
+    SELECT 'test: test_rate_monitor_data',           COUNT(*)
+    FROM dbo.test_rate_monitor_data
+    UNION ALL
+    SELECT 'prod: rate_monitor_summary (no prod equivalent)', 0
+    UNION ALL
+    SELECT 'test: test_rate_monitor_summary',        COUNT(*)
+    FROM dbo.test_rate_monitor_summary
+) counts
+ORDER BY src;
+
+
+-- ============================================================================
+-- 11. STATUS DISTRIBUTION — aim_status_pol
+-- ============================================================================
+PRINT '11. Policy status distribution (aim_status_pol)';
+
+SELECT
+    ISNULL(p.System, t.System)           AS System,
+    ISNULL(p.status_pol_rn, t.status_pol_rn) AS status_pol_rn,
+    ISNULL(p.status_pol_rl, t.status_pol_rl) AS status_pol_rl,
+    COUNT(p.polid)                       AS prod_count,
+    COUNT(t.polid)                       AS test_count,
+    COUNT(p.polid) - COUNT(t.polid)      AS diff
+FROM dbo.aim_status_pol p
+FULL OUTER JOIN dbo.test_aim_status_pol t
+    ON  p.System    = t.System
+    AND p.polid     = t.polid
+    AND p.pol_ed    = t.pol_ed
+GROUP BY
+    ISNULL(p.System, t.System),
+    ISNULL(p.status_pol_rn, t.status_pol_rn),
+    ISNULL(p.status_pol_rl, t.status_pol_rl)
+ORDER BY System, status_pol_rl, status_pol_rn;
+
+
+-- ============================================================================
+-- 12. PREMIUM TOTALS — rate_monitor_data (current valuation month)
+-- ============================================================================
+PRINT '12. rate_monitor_data premium totals (current mth_val)';
+
+DECLARE @mth_val INT =
+    YEAR(DATEADD(MONTH, -1, GETDATE())) * 100
+    + MONTH(DATEADD(MONTH, -1, GETDATE()));
+
+SELECT 'prod' AS src,
+    SUM(prem_written)       AS prem_written,
+    SUM(r_adq_written)      AS r_adq_written,
+    SUM(rr_adq_tech_written) AS rr_adq_tech_written,
+    COUNT(*)                AS row_count
+FROM dbo.rate_monitor_data
+WHERE mth_val = @mth_val
+
+UNION ALL
+
+SELECT 'test',
+    SUM(prem_written),
+    SUM(r_adq_written),
+    SUM(rr_adq_tech_written),
+    COUNT(*)
+FROM dbo.test_rate_monitor_data
+WHERE mth_val = @mth_val;
+
+
+-- ============================================================================
+-- 13. SUMMARY TOTALS — rate_monitor_summary (current valuation month)
+-- ============================================================================
+PRINT '13. rate_monitor_summary totals (current mth_val)';
+
+SELECT
+    status_pol_rl,
+    SUM(prem_written)           AS prem_written,
+    SUM(r_adq_written)          AS r_adq_written,
+    SUM(rr_adq_tech_written)    AS rr_adq_tech_written,
+    SUM(expr_pol_ct)            AS expr_pol_ct
+FROM dbo.test_rate_monitor_summary
+WHERE mth_val = @mth_val
+GROUP BY status_pol_rl
+ORDER BY status_pol_rl;
