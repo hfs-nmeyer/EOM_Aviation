@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -705,11 +705,9 @@ BEGIN TRY
 
     UPDATE #DiaAP02
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(premium_written AS NVARCHAR(30)),
-            CAST(premt_fullterm  AS NVARCHAR(30)),
-            CAST(prem_chg_annual AS NVARCHAR(30))
-        )
+        ISNULL(CAST(premium_written AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(premt_fullterm  AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(prem_chg_annual AS NVARCHAR(30)), '')
     ));
 
     -- -----------------------------------------------------------------------
@@ -720,11 +718,14 @@ BEGIN TRY
     TRUNCATE TABLE dbo.test_DiaAPCovg;
 
     DECLARE @cols NVARCHAR(MAX);
-    SELECT @cols = STRING_AGG(QUOTENAME(c.name), ', ')
-                   WITHIN GROUP (ORDER BY c.column_id)
-    FROM sys.columns AS c
-    WHERE c.object_id = OBJECT_ID('dbo.test_DiaAPCovg')
-      AND c.is_identity = 0;
+    SELECT @cols = STUFF((
+        SELECT ', ' + QUOTENAME(c.name)
+        FROM sys.columns AS c
+        WHERE c.object_id = OBJECT_ID('dbo.test_DiaAPCovg')
+          AND c.is_identity = 0
+        ORDER BY c.column_id
+        FOR XML PATH(''), TYPE
+    ).value('.', 'NVARCHAR(MAX)'), 1, 2, '');
 
     DECLARE @insertSQL NVARCHAR(MAX) =
         N'INSERT INTO dbo.test_DiaAPCovg (' + @cols + N') SELECT ' + @cols + N' FROM #DiaAP02;';

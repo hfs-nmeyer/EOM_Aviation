@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -111,12 +111,10 @@ BEGIN TRY
         pi.ratingversion_id,
         -- Pre-compute the row hash over financial columns for MERGE comparison
         CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-            CONCAT_WS('|',
-                CAST(ROUND(SUM(ISNULL(EOPM.premium_written_mtd,0)),2) AS NVARCHAR(30)),
-                CAST(ROUND(SUM(ISNULL(EOPM.premium_earned_mtd,0)),2)  AS NVARCHAR(30)),
-                CAST(ROUND(SUM(ISNULL(EOPM.premium_unearned,0)),2)    AS NVARCHAR(30)),
-                CAST(ROUND(SUM(ISNULL(EOPM.premium_written_ytd,0)),2) AS NVARCHAR(30))
-            )
+            ISNULL(CAST(ROUND(SUM(ISNULL(EOPM.premium_written_mtd,0)),2) AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(ROUND(SUM(ISNULL(EOPM.premium_earned_mtd,0)),2)  AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(ROUND(SUM(ISNULL(EOPM.premium_unearned,0)),2)    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(ROUND(SUM(ISNULL(EOPM.premium_written_ytd,0)),2) AS NVARCHAR(30)), '')
         ))                                                      AS row_hash
     INTO #staged
     FROM [AHI-S06].Diamond.dbo.EOPMonthlyPremiums      EOPM WITH (NOLOCK)

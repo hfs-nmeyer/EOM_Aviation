@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -310,13 +310,11 @@ BEGIN TRY
 
     UPDATE dbo.test_aim_status_pol
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(System        AS NVARCHAR(10)),
-            CAST(polid         AS NVARCHAR(30)),
-            CAST(pol_ed        AS NVARCHAR(10)),
-            CAST(status_pol_rn AS NVARCHAR(20)),
-            CAST(status_pol_rl AS NVARCHAR(20))
-        )));
+        ISNULL(CAST(System        AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(polid         AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(pol_ed        AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(status_pol_rn AS NVARCHAR(20)), '') + '|' +
+        ISNULL(CAST(status_pol_rl AS NVARCHAR(20)), '')));
 
     -- -----------------------------------------------------------------------
     -- Write: test_aim_status_pol_policy_mapping
@@ -335,13 +333,11 @@ BEGIN TRY
 
     UPDATE dbo.test_aim_status_pol_policy_mapping
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(policy_id        AS NVARCHAR(30)),
-            CAST(renewal_ver      AS NVARCHAR(10)),
-            CAST(revised_pol_id   AS NVARCHAR(30)),
-            CAST(premium_written  AS NVARCHAR(30)),
-            CAST(premium_fullterm AS NVARCHAR(30))
-        )));
+        ISNULL(CAST(policy_id        AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(renewal_ver      AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(revised_pol_id   AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(premium_written  AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(premium_fullterm AS NVARCHAR(30)), '')));
 
     DROP TABLE #temp01, #temp02, #temp02_a, #temp03, #temp04,
                #temp05, #temp06, #final, #final_2;

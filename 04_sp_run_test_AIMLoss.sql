@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -306,14 +306,12 @@ BEGIN TRY
         net_incd_la, net_incd_llae,
         is_represented,
         CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-            CONCAT_WS('|',
-                CAST(paid_l    AS NVARCHAR(30)),
-                CAST(incd_l    AS NVARCHAR(30)),
-                CAST(paid_nlgl AS NVARCHAR(30)),
-                CAST(incd_nlgl AS NVARCHAR(30)),
-                CAST(paid_a    AS NVARCHAR(30)),
-                CAST(incd_a    AS NVARCHAR(30))
-            )
+            ISNULL(CAST(paid_l    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_l    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_nlgl AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_nlgl AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_a    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_a    AS NVARCHAR(30)), '')
         ))                                                          AS row_hash,
         GETDATE()                                                   AS created_date,
         GETDATE()                                                   AS last_updated
@@ -341,14 +339,12 @@ BEGIN TRY
         net_incd_la, net_incd_llae,
         is_represented,
         CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-            CONCAT_WS('|',
-                CAST(paid_l    AS NVARCHAR(30)),
-                CAST(incd_l    AS NVARCHAR(30)),
-                CAST(paid_nlgl AS NVARCHAR(30)),
-                CAST(incd_nlgl AS NVARCHAR(30)),
-                CAST(paid_a    AS NVARCHAR(30)),
-                CAST(incd_a    AS NVARCHAR(30))
-            )
+            ISNULL(CAST(paid_l    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_l    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_nlgl AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_nlgl AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_a    AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_a    AS NVARCHAR(30)), '')
         ))                                                          AS row_hash,
         GETDATE()                                                   AS created_date,
         GETDATE()                                                   AS last_updated

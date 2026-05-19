@@ -3945,14 +3945,12 @@ select * into dbo.test_aim_diamond_STT from #temp17
 
     UPDATE dbo.test_aim_diamond_STT
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(prem_written           AS NVARCHAR(30)),
-            CAST(prem_annual            AS NVARCHAR(30)),
-            CAST(r_prem_tech_written    AS NVARCHAR(30)),
-            CAST(rr_prem_tech_written   AS NVARCHAR(30)),
-            CAST(rrr_prem_tech_written  AS NVARCHAR(30)),
-            CAST(zz_prem_tech_written   AS NVARCHAR(30))
-        )));
+        ISNULL(CAST(prem_written           AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(prem_annual            AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(r_prem_tech_written    AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rr_prem_tech_written   AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rrr_prem_tech_written  AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(zz_prem_tech_written   AS NVARCHAR(30)), '')));
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -5757,14 +5755,12 @@ select * into dbo.test_aim_STT from #datafinal
 
     UPDATE dbo.test_aim_STT
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(prem_written           AS NVARCHAR(30)),
-            CAST(prem_annual            AS NVARCHAR(30)),
-            CAST(r_prem_tech_written    AS NVARCHAR(30)),
-            CAST(rr_prem_tech_written   AS NVARCHAR(30)),
-            CAST(rrr_prem_tech_written  AS NVARCHAR(30)),
-            CAST(zz_prem_tech_written   AS NVARCHAR(30))
-        )));
+        ISNULL(CAST(prem_written           AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(prem_annual            AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(r_prem_tech_written    AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rr_prem_tech_written   AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rrr_prem_tech_written  AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(zz_prem_tech_written   AS NVARCHAR(30)), '')));
 
 
 drop table

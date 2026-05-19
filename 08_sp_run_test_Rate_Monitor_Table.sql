@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -197,13 +197,11 @@ BEGIN TRY
 
     UPDATE dbo.test_rate_monitor_data
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(pol_num_full_clean_ac AS NVARCHAR(30)),
-            CAST(mth_val               AS NVARCHAR(10)),
-            CAST(prem_written          AS NVARCHAR(30)),
-            CAST(r_adq_written         AS NVARCHAR(30)),
-            CAST(rr_adq_tech_written   AS NVARCHAR(30))
-        )));
+        ISNULL(CAST(pol_num_full_clean_ac AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(mth_val               AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(prem_written          AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(r_adq_written         AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rr_adq_tech_written   AS NVARCHAR(30)), '')));
 
     -- -----------------------------------------------------------------------
     -- Write: test_rate_monitor_summary
@@ -362,14 +360,12 @@ BEGIN TRY
 
     UPDATE dbo.test_rate_monitor_summary
     SET row_hash = CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-        CONCAT_WS('|',
-            CAST(mth_val             AS NVARCHAR(10)),
-            CAST(mth_pol_exp         AS NVARCHAR(10)),
-            CAST(status_pol_rl       AS NVARCHAR(20)),
-            CAST(prem_written        AS NVARCHAR(30)),
-            CAST(r_adq_written       AS NVARCHAR(30)),
-            CAST(rr_adq_tech_written AS NVARCHAR(30))
-        )));
+        ISNULL(CAST(mth_val             AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(mth_pol_exp         AS NVARCHAR(10)), '') + '|' +
+        ISNULL(CAST(status_pol_rl       AS NVARCHAR(20)), '') + '|' +
+        ISNULL(CAST(prem_written        AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(r_adq_written       AS NVARCHAR(30)), '') + '|' +
+        ISNULL(CAST(rr_adq_tech_written AS NVARCHAR(30)), '')));
 
     DROP TABLE #diamond_mapping, #temp01, #temp02;
 

@@ -1,4 +1,4 @@
-USE [Pricing_AIM]
+﻿USE [Pricing_AIM]
 GO
 
 /*=============================================================================
@@ -727,14 +727,12 @@ BEGIN TRY
         clm_status1, clm_status2, clm_status3,
         WHAT_TABLE,
         CONVERT(BINARY(32), HASHBYTES('SHA2_256',
-            CONCAT_WS('|',
-                CAST(mth_val        AS NVARCHAR(10)),
-                CAST(AY             AS NVARCHAR(10)),
-                CAST(incd_loss      AS NVARCHAR(30)),
-                CAST(paid_loss      AS NVARCHAR(30)),
-                CAST(incd_ulae      AS NVARCHAR(30)),
-                CAST(paid_ulae      AS NVARCHAR(30))
-            )
+            ISNULL(CAST(mth_val        AS NVARCHAR(10)), '') + '|' +
+            ISNULL(CAST(AY             AS NVARCHAR(10)), '') + '|' +
+            ISNULL(CAST(incd_loss      AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_loss      AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(incd_ulae      AS NVARCHAR(30)), '') + '|' +
+            ISNULL(CAST(paid_ulae      AS NVARCHAR(30)), '')
         )),
         GETDATE(), GETDATE()
     FROM #completeach;
