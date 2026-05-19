@@ -81,12 +81,12 @@ BEGIN TRY
         a.renewal_ver,
         a.eff_date,
         a.exp_date,
-        a.cancelled,
-        a.cancelledon_date,
-        a.rewrittenfrom_policy_id,
-        a.rewrittenfrom_policy,
+        g.cancelled,
+        g.cancelledon_date,
+        g.rewrittenfrom_policy_id,
+        g.rewrittenfrom_policy,
         g.legacy_policynumber,
-        a.firstwritten_date,
+        g.firstwritten_date,
         a.policyimage_num,
         SUM(a.premium_chg_written)  AS premium_chg_written,
         SUM(a.premium_chg_fullterm) AS premium_chg_fullterm
@@ -102,9 +102,9 @@ BEGIN TRY
       AND a.policystatuscode_id IN (1, 3, 20)
     GROUP BY
         g.client_id, a.policy_id, a.policy, a.renewal_ver,
-        a.eff_date, a.exp_date, a.cancelled, a.cancelledon_date,
-        a.rewrittenfrom_policy_id, a.rewrittenfrom_policy,
-        g.legacy_policynumber, a.firstwritten_date, a.policyimage_num;
+        a.eff_date, a.exp_date, g.cancelled, g.cancelledon_date,
+        g.rewrittenfrom_policy_id, g.rewrittenfrom_policy,
+        g.legacy_policynumber, g.firstwritten_date, a.policyimage_num;
 
     -- -----------------------------------------------------------------------
     -- Map Apollo to Diamond via legacy policy number; derive status flags
