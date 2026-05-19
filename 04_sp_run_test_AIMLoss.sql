@@ -3,7 +3,7 @@ GO
 
 /*=============================================================================
   sp_run_test_AIMLoss.sql
-  Purpose : Combine Apollo loss data (test_aim_loss_ulae) with Diamond loss
+  Purpose : Combine Apollo loss data (aim_loss_ulae) with Diamond loss
             data (pricing_hspl auto_hspl_loss_15YY_XXXX) into test_AIMLoss.
 
   Improvements over original:
@@ -43,7 +43,7 @@ BEGIN TRY
         N'pricing_hspl.dbo.[auto_hspl_loss_15' + @YY + N'_' + @MMYY + N']';
 
     -- -----------------------------------------------------------------------
-    -- Stage Apollo loss data from test_aim_loss_ulae.
+    -- Stage Apollo loss data from aim_loss_ulae (production source table; not a pipeline output).
     -- Normalises column names to the shared AIMLoss schema and resolves the
     -- ISOCatNumber / CAT_indicator inline (avoids a separate UPDATE pass).
     -- -----------------------------------------------------------------------
@@ -139,7 +139,7 @@ BEGIN TRY
         -- Icarus representation flag joined below
         CAST(NULL AS INT)                                           AS is_represented
     INTO #apollo
-    FROM dbo.test_aim_loss_ulae AS a;
+    FROM dbo.aim_loss_ulae AS a;
 
     -- Widen ISOCatNumber to accept existing values before the join update
     ALTER TABLE #apollo ALTER COLUMN ISOCatNumber VARCHAR(30);
